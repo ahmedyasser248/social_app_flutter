@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:social_app/shared/styles/icon_broken.dart';
 
 Widget defaultFormField({
   required TextEditingController controller,
@@ -124,3 +125,19 @@ Color chooseToastColor(ToastStates state) {
 
   return color;
 }
+
+PreferredSizeWidget defaultAppBar({
+  required BuildContext context,
+  String title='',
+  List<Widget>? actions,
+
+}) => AppBar(
+  leading: IconButton(onPressed: (){
+    Navigator.pop(context);
+  }, icon: Icon(
+   IconBroken.Arrow___Left,
+  ),
+  ),
+  title: Text(title),
+  actions: actions,
+);

@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/shared/constants.dart';
+import 'package:social_app/shared/themes.dart';
 
 import 'layout/cubit/cubit.dart';
 import 'layout/social_layout.dart';
@@ -42,6 +43,7 @@ class MyApp extends StatelessWidget {
 
     ] ,
         child:MaterialApp(
+          theme: lightTheme,
           debugShowCheckedModeBanner: false,
           home: startWidget,
         )  );
