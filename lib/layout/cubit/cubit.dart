@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:social_app/layout/cubit/states.dart';
+import 'package:social_app/models/message_model.dart';
 import 'package:social_app/models/post_model.dart';
 import 'package:social_app/models/social_user_model.dart';
 import 'package:social_app/modules/chats.dart';
@@ -348,4 +349,71 @@ class SocialCubit extends Cubit<SocialStates> {
       emit(SocialGetAllUsersErrorState(error.toString()));
     });
   }
+
+void sendMessage({
+  required String receiverId,
+  required String dateTime,
+  required String text,
+}) {
+  MessageModel model = MessageModel(
+    text: text,
+    senderId: userModel!.uId,
+    receiverId: receiverId,
+    dateTime: dateTime,
+  );
+
+  // set my chats
+
+  FirebaseFirestore.instance
+      .collection('users')
+      .doc(userModel!.uId)
+      .collection('chats')
+      .doc(receiverId)
+      .collection('messages')
+      .add(model.toMap())
+      .then((value) {
+    emit(SocialSendMessageSuccessState());
+  }).catchError((error) {
+    emit(SocialSendMessageErrorState());
+  });
+
+  // set receiver chats
+
+  FirebaseFirestore.instance
+      .collection('users')
+      .doc(receiverId)
+      .collection('chats')
+      .doc(userModel!.uId)
+      .collection('messages')
+      .add(model.toMap())
+      .then((value) {
+    emit(SocialSendMessageSuccessState());
+  }).catchError((error) {
+    emit(SocialSendMessageErrorState());
+  });
+}
+
+List<MessageModel>? messages = [];
+
+void getMessages({
+  required String receiverId,
+}) {
+  FirebaseFirestore.instance
+      .collection('users')
+      .doc(userModel!.uId)
+      .collection('chats')
+      .doc(receiverId)
+      .collection('messages')
+      .orderBy('dateTime')
+      .snapshots()
+      .listen((event) {
+    messages = [];
+
+    event.docs.forEach((element) {
+      messages!.add(MessageModel.fromJson(element.data()));
+    });
+
+    emit(SocialGetMessagesSuccessState());
+  });
+}
 }
