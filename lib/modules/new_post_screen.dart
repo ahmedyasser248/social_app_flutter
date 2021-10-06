@@ -15,6 +15,7 @@ class NewPostScreen extends StatelessWidget
     return BlocConsumer<SocialCubit, SocialStates>(
       listener: (context, state) {},
       builder: (context, state) {
+        var cubit = SocialCubit.get(context);
         return Scaffold(
           appBar: defaultAppBar(
             context: context,
@@ -58,7 +59,7 @@ class NewPostScreen extends StatelessWidget
                     CircleAvatar(
                       radius: 25.0,
                       backgroundImage: NetworkImage(
-                        'https://image.freepik.com/free-photo/skeptical-woman-has-unsure-questioned-expression-points-fingers-sideways_273609-40770.jpg',
+                        cubit.userModel!.image!,
                       ),
                     ),
                     SizedBox(
@@ -66,7 +67,7 @@ class NewPostScreen extends StatelessWidget
                     ),
                     Expanded(
                       child: Text(
-                        'Abdullah Mansour',
+                        cubit.userModel!.name!,
                         style: TextStyle(
                           height: 1.4,
                         ),

@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/models/social_user_model.dart';
+import 'package:social_app/network/local/cacheHelper.dart';
 import 'package:social_app/shared/cubit/register/states.dart';
 
 class SocialRegisterCubit extends Cubit<SocialRegisterStates> {
@@ -35,6 +36,8 @@ class SocialRegisterCubit extends Cubit<SocialRegisterStates> {
         name: name,
 
       );
+      //save the uid after registration
+      CacheHelper.saveData(key:'uId', value:value.user!.uid);
     }).catchError((error) {
       emit(SocialRegisterErrorState(error.toString()));
     });
