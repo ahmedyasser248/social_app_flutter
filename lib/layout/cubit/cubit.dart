@@ -317,7 +317,7 @@ class SocialCubit extends Cubit<SocialStates> {
     });
   }
 
-  void likePost(String postId) {
+  void likePost(String postId,int index) {
     FirebaseFirestore.instance
         .collection('posts')
         .doc(postId)
@@ -326,10 +326,39 @@ class SocialCubit extends Cubit<SocialStates> {
         .set({
       'like': true,
     }).then((value) {
+      likes[index]++;
       emit(SocialLikePostSuccessState());
     }).catchError((error) {
       emit(SocialLikePostErrorState(error.toString()));
     });
+  }
+  void unLikePost(String postId,int index){
+    FirebaseFirestore.instance
+        .collection('posts')
+        .doc(postId)
+        .collection('likes')
+        .doc(userModel!.uId)
+        .delete().then((value) {
+          likes[index]--;
+          emit(SocialUnlikePostStateSuccess());
+    }).catchError((error){
+
+      emit(SocialUnLikePostStateError());
+    });
+  }
+  Future<bool> checkIfExist(String postId) async{
+    late bool checkIt;
+    var ref = await FirebaseFirestore.instance
+        .collection('posts')
+        .doc(postId)
+        .collection('likes')
+        .doc(userModel!.uId!).get()
+    .then((value) {
+      checkIt = value.exists;
+      print('changedit');
+    });
+    print(checkIt);
+    return checkIt;
   }
 
   List<SocialUserModel> users = [];
@@ -416,4 +445,35 @@ void getMessages({
     emit(SocialGetMessagesSuccessState());
   });
 }
+  Future<SocialUserModel> getUser(String userId)async{
+  late SocialUserModel model;
+   print('am herere');
+   await FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+        .get().then((value) {
+       model= SocialUserModel.fromJson(value.data()!);
+    });
+  return model;
+}
+List<SocialUserModel> likers =[];
+ Future<void> getLikers(String postId)  async {
+   likers=[];
+   print('got here');
+   QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+       .collection('posts')
+       .doc(postId)
+       .collection('likes')
+       .get();
+   print(querySnapshot.docs.length);
+   for(int  i = 0 ; i < querySnapshot.docs.length;i++){
+     var a = querySnapshot.docs[i];
+     print(a.id);
+     await getUser(a.id).then((value){
+       likers.add(value);
+     });
+   }
+   print('got at end');
+   emit(getLikersSuccessState());
+ }
 }

@@ -90,3 +90,16 @@ class SocialSendMessageSuccessState extends SocialStates {}
 class SocialSendMessageErrorState extends SocialStates {}
 
 class SocialGetMessagesSuccessState extends SocialStates {}
+
+class SocialUnlikePostStateSuccess  extends SocialStates{}
+
+class SocialUnLikePostStateError extends SocialStates{}
+ //likes
+ class getLikersSuccessState extends SocialStates{}
+
+ class getLikersFailureState extends SocialStates{}
+
+ class getCommentsSuccessState extends SocialStates{}
+
+ class getCommentsErrorState extends SocialStates{}
+ 

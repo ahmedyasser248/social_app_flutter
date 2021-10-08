@@ -4,18 +4,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/layout/cubit/cubit.dart';
 import 'package:social_app/layout/cubit/states.dart';
 import 'package:social_app/models/post_model.dart';
+import 'package:social_app/models/social_user_model.dart';
+import 'package:social_app/shared/components.dart';
 import 'package:social_app/shared/constants.dart';
 import 'package:social_app/shared/styles/icon_broken.dart';
 
 class FeedsScreen extends StatelessWidget
 {
+  
   @override
   Widget build(BuildContext context)
   {
     return BlocConsumer<SocialCubit, SocialStates>(
       listener: (context, state) {},
       builder: (context, state)
-      {
+      { var cubit = SocialCubit.get(context);
         return ConditionalBuilder(
           condition: SocialCubit.get(context).posts.length > 0 && SocialCubit.get(context).userModel != null,
           builder: (context) => SingleChildScrollView(
@@ -255,7 +258,38 @@ class FeedsScreen extends StatelessWidget
                         ],
                       ),
                     ),
-                    onTap: () {},
+                    onTap: () {
+                      var cubit = SocialCubit.get(context);
+                      cubit.getLikers(cubit.postsId[index]).then((value) {
+                        showModalBottomSheet(
+
+                            elevation:10.0 ,
+                            context: context,
+                            builder: (context)=>
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children:[
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                       'LIKES',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20.0,
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                    child: ListView.separated(itemBuilder:(context,index)=>buildLikeItem(SocialCubit.get(context).likers[index]) ,
+                                    separatorBuilder: (context,index)=>SizedBox(height: 10.0,)
+                                    , itemCount: SocialCubit.get(context).likers.length),
+                                  ),
+                                ]),
+
+                        );
+                      });
+
+                    },
                   ),
                 ),
                 Expanded(
@@ -282,7 +316,8 @@ class FeedsScreen extends StatelessWidget
                         ],
                       ),
                     ),
-                    onTap: () {},
+                    onTap: () {
+                    },
                   ),
                 ),
               ],
@@ -341,14 +376,43 @@ class FeedsScreen extends StatelessWidget
                   ],
                 ),
                 onTap: ()
-                {
-                  SocialCubit.get(context).likePost(SocialCubit.get(context).postsId[index]);
+                {  var cubit = SocialCubit.get(context);
+                cubit.checkIfExist(cubit.postsId[index]).then((value) {
+                  if(value){
+                    cubit.unLikePost(cubit.postsId[index], index);
+                    print(' didint liked it');
+                  }else{
+                    cubit.likePost(cubit.postsId[index],index);
+                    print('liked it');
+                  }
+                });
+
                 },
               ),
             ],
           ),
         ],
       ),
+    ),
+  );
+  Widget buildLikeItem(SocialUserModel model) =>Padding(
+    padding: const EdgeInsets.all(10.0),
+    child: Row(
+      children: [
+        CircleAvatar(
+          radius: 25.0,
+          backgroundImage: NetworkImage(model.image!),
+        ),
+        SizedBox(
+          width: 10.0,
+        ),
+        Text(
+          '${model.name}',
+          style: TextStyle(
+            height: 1.4
+          ),
+        )
+      ],
     ),
   );
 }
