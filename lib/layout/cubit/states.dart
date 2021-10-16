@@ -98,8 +98,13 @@ class SocialUnLikePostStateError extends SocialStates{}
  class getLikersSuccessState extends SocialStates{}
 
  class getLikersFailureState extends SocialStates{}
-
+//comments
  class getCommentsSuccessState extends SocialStates{}
 
  class getCommentsErrorState extends SocialStates{}
- 
+
+ class postCommentSuccessState extends SocialStates{}
+
+ class postCommentErrorState extends SocialStates{}
+
+ class changeCommentSizeState extends SocialStates{}
